@@ -1,0 +1,22 @@
+{
+  "name": "hone-gaming-optimizer",
+  "version": "2.5.0",
+  "description": "Hone Gaming Optimizer - Safe PC Tuning Suite for Epic Games & Windows 10/11",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build:exe": "bash src/build.sh",
+    "serve": "node server.js"
+  },
+  "keywords": [
+    "hone",
+    "gaming-optimizer",
+    "fps-boost",
+    "pc-tweaks",
+    "epic-games",
+    "latency-reduction",
+    "system-restore"
+  ],
+  "author": "Hone Gaming Suite",
+  "license": "MIT"
+}

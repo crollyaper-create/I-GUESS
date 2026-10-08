@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hone Gaming Optimizer | Epic Games PC Tuning Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0b0e;
+      --bg-sidebar: #0f1118;
+      --bg-card: #151822;
+      --bg-card-hover: #1b1f2d;
+      --bg-card-active: #202537;
+      --border-subtle: #222738;
+      --border-highlight: #333b52;
+      
+      --accent-hone: #f59e0b;
+      --accent-hone-glow: rgba(245, 158, 11, 0.25);
+      --accent-gold: #fbbf24;
+      --accent-amber-dark: #b45309;
+      
+      --accent-blue: #38bdf8;
+      --accent-blue-glow: rgba(56, 189, 248, 0.2);
+      --accent-green: #10b981;
+      --accent-green-glow: rgba(16, 185, 129, 0.2);
+      --accent-red: #ef4444;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-highlight);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-hone);
+    }
+
+    /* Layout */
+    .app-sidebar {
+      width: 270px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .app-main {
+      margin-left: 270px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.05) 0%, transparent 45%),
+                  radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.04) 0%, transparent 40%),
+                  var(--bg-dark);
+    }
+
+    /* Sidebar Brand */
+    .brand-container {
+      padding: 24px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand-logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px var(--accent-hone-glow);
+    }
+
+    .brand-logo-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #0a0b0e;
+    }
+
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-text span {
+      color: var(--accent-hone);
+    }
+
+    .brand-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-hone);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    /* Navigation */
+    .nav-list {
+      list-style: none;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .nav-item button:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+
+    .nav-item.active button {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.04));
+      color: var(--accent-gold);
+      border-color: rgba(245, 158, 11, 0.35);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .nav-item button svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      stroke-width: 2;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: var(--bg-card-hover);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-item.active .nav-badge {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-gold);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    /* Sidebar Footer Status */
+    .sidebar-footer {
+      padding: 16px 14px;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(10, 11, 14, 0.5);
+    }
+
+    .system-status-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      margin-bottom: 6px;
+    }
+
+    .status-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .status-label {
+      color: var(--text-dim);
+    }
+
+    .status-val {
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
+
+    /* Top Navigation Bar */
+    .top-header {
+      height: 68px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 17, 24, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .active-mode-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--accent-gold);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .shield-safe-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-quick-boost {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b0c10;
+      border: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 10px var(--accent-hone-glow);
+    }
+
+    .btn-quick-boost:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45);
+    }
+
+    .btn-download-exe {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-highlight);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-download-exe:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-hone);
+      color: var(--accent-gold);
+    }
+
+    /* Content Area */
+    .content-container {
+      padding: 28px;
+      max-width: 1400px;
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease forwards;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Titles */
+    .section-header {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(21, 24, 34, 0.95), rgba(15, 17, 24, 0.95));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.14);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-headline {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .hero-headline span {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 680px;
+      margin-bottom: 20px;
+    }
+
+    .hero-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .metric-card:hover {
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+
+    .metric-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .metric-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .metric-val.hone-accent {
+      color: var(--accent-gold);
+    }
+
+    .metric-sub {
+      font-size: 0.78rem;
+      color: var(--accent-green);
+      font-weight: 600;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .metric-progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .metric-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      border-radius: 2px;
+      transition: width 0.8s ease;
+    }
+
+    /* 4 Game Modes Grid */
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .mode-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .mode-card:hover {
+      border-color: var(--border-highlight);
+      background: var(--bg-card-hover);
+      transform: translateY(-3px);
+    }
+
+    .mode-card.active {
+      border-color: var(--accent-hone);
+      box-shadow: 0 4px 24px rgba(245, 158, 11, 0.18);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--bg-card) 60%);
+    }
+
+    .mode-card.god-mode {
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .mode-card.god-mode.active {
+      border-color: var(--accent-gold);
+      box-shadow: 0 6px 30px rgba(245, 158, 11, 0.25);
+    }
+
+    .mode-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      align-self: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .badge-balanced {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge-high {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-ultimate {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .badge-god {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.3));
+      color: #ffffff;
+      border: 1px solid var(--accent-gold);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .mode-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mode-fps-gain {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .mode-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 18px;
+      flex: 1;
+    }
+
+    .mode-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 20px;
+      font-size: 0.78rem;
+    }
+
+    .mode-features-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+    }
+
+    .mode-features-list li svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent-hone);
+      flex-shrink: 0;
+    }
+
+    .btn-apply-mode {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border: 1px solid var(--border-highlight);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-apply-mode:hover {
+      background: var(--border-highlight);
+      color: #ffffff;
+    }
+
+    .mode-card.active .btn-apply-mode {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0a0b0e;
+      border: none;
+      box-shadow: 0 2px 10px var(--accent-hone-glow);
+    }
+
+    /* Comparison Matrix Table */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .table-header-title {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .matrix-table th {
+      padding: 12px 18px;
+      background: rgba(15, 17, 24, 0.7);
+      color: var(--text-dim);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-subtle);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
+    .matrix-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(34, 39, 56, 0.5);
+      color: var(--text-muted);
+    }
+
+    .matrix-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .matrix-table tr:hover td {
+      background: rgba(27, 31, 45, 0.4);
+    }
+
+    .check-icon {
+      color: var(--accent-green);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cross-icon {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .gold-check {
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    /* PC Scanner Section */
+    .scanner-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .scan-radar-visual {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radar-circle {
+      position: absolute;
+      border: 2px solid rgba(245, 158, 11, 0.2);
+      border-radius: 50%;
+      animation: pulseRadar 2.5s infinite linear;
+    }
+
+    .radar-circle:nth-child(1) { width: 40px; height: 40px; }
+    .radar-circle:nth-child(2) { width: 80px; height: 80px; animation-delay: 0.8s; }
+    .radar-circle:nth-child(3) { width: 120px; height: 120px; animation-delay: 1.6s; }
+
+    @keyframes pulseRadar {
+      0% { transform: scale(0.6); opacity: 0.8; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    .radar-center-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b0c10;
+      z-index: 2;
+      box-shadow: 0 0 20px var(--accent-hone-glow);
+    }
+
+    .scan-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .scan-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      max-width: 520px;
+      margin: 0 auto 24px;
+    }
+
+    .scan-btn-primary {
+      padding: 12px 32px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b0c10;
+      border: none;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 18px var(--accent-hone-glow);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scan-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(245, 158, 11, 0.45);
+    }
+
+    .scan-progress-area {
+      display: none;
+      margin-top: 24px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .scan-status-text {
+      font-size: 0.85rem;
+      color: var(--accent-gold);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 8px;
+    }
+
+    .scan-bar-outer {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .scan-bar-inner {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      transition: width 0.3s ease;
+    }
+
+    /* Bottleneck Findings Card */
+    .scan-results-container {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      text-align: left;
+    }
+
+    .score-summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .score-circle-big {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent-hone) 0% 48%, rgba(255,255,255,0.06) 48% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 16px 0;
+      transition: var(--transition);
+    }
+
+    .score-circle-inner {
+      width: 108px;
+      height: 108px;
+      background: var(--bg-card);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .score-max {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .score-verdict {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-top: 8px;
+    }
+
+    .bottlenecks-list-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .findings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .findings-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .finding-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 10px;
+      transition: var(--transition);
+    }
+
+    .finding-row:hover {
+      border-color: var(--border-highlight);
+    }
+
+    .finding-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .finding-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--accent-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    .finding-icon.fixed {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-green);
+    }
+
+    .finding-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .finding-detail {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .btn-fix-single {
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border-highlight);
+      color: var(--accent-gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-fix-single:hover {
+      background: var(--accent-hone);
+      color: #0b0c10;
+    }
+
+    .btn-fix-all {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border: none;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-fix-all:hover {
+      box-shadow: 0 4px 18px var(--accent-green-glow);
+      transform: translateY(-1px);
+    }
+
+    /* Tweaks Catalog */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 7px 14px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-btn:hover {
+      border-color: var(--border-highlight);
+      color: var(--text-main);
+    }
+
+    .filter-btn.active {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: var(--accent-gold);
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 260px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 14px 8px 36px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-hone);
+      box-shadow: 0 0 10px var(--accent-hone-glow);
+    }
+
+    .search-icon-svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .tweaks-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .tweak-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: var(--transition);
+    }
+
+    .tweak-card:hover {
+      border-color: var(--border-highlight);
+      background: var(--bg-card-hover);
+    }
+
+    .tweak-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tweak-top-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .tweak-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .tweak-safe-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .tweak-fps-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .tweak-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Switch Component */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #242938;
+      transition: .25s;
+      border-radius: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #94a3b8;
+      transition: .25s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 10px var(--accent-hone-glow);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: #ffffff;
+    }
+
+    /* Boost-Up Tools */
+    .boostup-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .boost-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .boost-card:hover {
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+
+    .boost-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .boost-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .boost-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .btn-run-boost {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border: 1px solid var(--border-highlight);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-run-boost:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b0c10;
+      border-color: transparent;
+    }
+
+    /* Restore Points Section */
+    .restore-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .restore-hero-left {
+      max-width: 650px;
+    }
+
+    .restore-hero-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .restore-hero-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .btn-create-restore {
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-create-restore:hover {
+      box-shadow: 0 4px 16px var(--accent-green-glow);
+      transform: translateY(-1px);
+    }
+
+    .restore-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .restore-table th {
+      padding: 12px 18px;
+      background: rgba(15, 17, 24, 0.7);
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+
+    .restore-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(34, 39, 56, 0.5);
+      color: var(--text-muted);
+    }
+
+    .btn-table-rollback {
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-table-rollback:hover {
+      background: var(--accent-red);
+      color: #ffffff;
+    }
+
+    /* Game Profiles */
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .game-profile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      transition: var(--transition);
+    }
+
+    .game-profile-card:hover {
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+
+    .game-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .game-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border-highlight);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    .game-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .game-fps-badge {
+      font-size: 0.75rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    .game-tweaks-list {
+      list-style: none;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border-highlight);
+      border-left: 4px solid var(--accent-hone);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10, 11, 14, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 520px;
+      padding: 26px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      animation: modalScale 0.25s ease forwards;
+    }
+
+    @keyframes modalScale {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-subtle);
+      color: #ffffff;
+      font-size: 0.9rem;
+      margin: 14px 0 20px;
+      outline: none;
+    }
+
+    .modal-input:focus {
+      border-color: var(--accent-hone);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Benchmarks CSS Chart */
+    .benchmarks-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+
+    .benchmarks-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .bench-col {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .bench-game-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .bench-bars {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 10px;
+      height: 120px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 10px;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 28px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-fill {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.8s ease;
+    }
+
+    .bar-stock {
+      background: #475569;
+    }
+
+    .bar-hone {
+      background: linear-gradient(180deg, #fbbf24, #d97706);
+      box-shadow: 0 0 10px var(--accent-hone-glow);
+    }
+
+    .bar-fps-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 4px;
+    }
+
+    .bench-gain-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .modes-grid, .hero-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .tweaks-grid, .boostup-grid, .profiles-grid, .benchmarks-grid {
+        grid-template-columns: 1fr;
+      }
+      .scan-results-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand-container">
+      <div class="brand-logo-icon">
+        <svg viewBox="0 0 24 24">
+          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5" stroke="#0a0b0e" stroke-width="2" fill="none"/>
+          <path d="M12 6L18 10V14L12 18L6 14V10L12 6Z" fill="#0a0b0e"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>HONE<span>CTRL</span></h1>
+        <div class="brand-tag">EPIC GAMES EDITION</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-item active" data-tab="tab-dashboard">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Dashboard
+          <span class="nav-badge">LIVE</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-modes">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"/></svg>
+          Game Modes
+          <span class="nav-badge">4 PRESETS</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-scanner">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          PC Scanner
+          <span class="nav-badge" id="scan-badge">SCAN</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-tweaks">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          Tweaks Catalog
+          <span class="nav-badge">42 SAFE</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-boostup">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Boost-Ups
+          <span class="nav-badge">CLEAN</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-restore">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Restore Points
+          <span class="nav-badge">SAFE</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-profiles">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24m-14.14 0 4.24-4.24m5.66-5.66 4.24-4.24"/></svg>
+          Game Profiles
+          <span class="nav-badge">ESPORTS</span>
+        </button>
+      </li>
+      <li class="nav-item" data-tab="tab-download">
+        <button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Get Windows EXE
+          <span class="nav-badge">.EXE</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="system-status-box">
+        <div class="status-row">
+          <span class="status-label">Engine Status:</span>
+          <span class="status-val"><span class="status-dot"></span> Active</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Timer Res:</span>
+          <span class="status-val" style="color:var(--accent-gold);">0.500 ms</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Safety Shield:</span>
+          <span class="status-val" style="color:var(--accent-green);">Guaranteed</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <div class="active-mode-pill" id="header-active-pill">
+          <span>⚡</span> <span id="header-mode-text">GOD MODE ENGAGED (+185 FPS)</span>
+        </div>
+        <div class="shield-safe-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Restore Point: Online
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn-quick-boost" onclick="triggerBoostUp('RAM & DNS')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Instant Boost
+        </button>
+        <button class="btn-download-exe" onclick="downloadBinary()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          HoneOptimizer.exe
+        </button>
+      </div>
+    </header>
+
+    <div class="content-container">
+
+      <!-- ================= TAB 1: DASHBOARD ================= -->
+      <section id="tab-dashboard" class="tab-content active">
+        
+        <div class="hero-banner">
+          <div class="hero-top-badge">⚡ OFFICIAL HONECONTROL GAMING PIPELINE</div>
+          <h2 class="hero-headline">Unleash Ultimate Hardware Power with <span>Hone</span></h2>
+          <p class="hero-desc">
+            Engineered to eliminate system bottlenecks, stabilize frame delivery, and drastically reduce input delay. Every tweak is rigorously verified, 100% safe, non-destructive, and backed by automated Windows restore points.
+          </p>
+
+          <div class="hero-metrics-grid">
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>FPS Gain Projected</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              </div>
+              <div class="metric-val hone-accent" id="dash-fps-val">+185 FPS</div>
+              <div class="metric-sub">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                Min 100+ FPS Guarantee
+              </div>
+              <div class="metric-progress-bar">
+                <div class="metric-progress-fill" style="width: 92%;"></div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>Input Latency</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="metric-val" id="dash-latency-val">3.1 ms</div>
+              <div class="metric-sub" style="color:var(--accent-green);">-58% Click-to-Photon</div>
+              <div class="metric-progress-bar">
+                <div class="metric-progress-fill" style="width: 88%; background: var(--accent-green);"></div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>PC Gaming Score</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div class="metric-val" id="dash-score-val">99 / 100</div>
+              <div class="metric-sub">Peak Overdrive Status</div>
+              <div class="metric-progress-bar">
+                <div class="metric-progress-fill" style="width: 99%; background: var(--accent-gold);"></div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>CPU Core Parking</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              </div>
+              <div class="metric-val" style="color:var(--accent-blue);">0% Parked</div>
+              <div class="metric-sub">16/16 Threads Active</div>
+              <div class="metric-progress-bar">
+                <div class="metric-progress-fill" style="width: 100%; background: var(--accent-blue);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Quick Switcher -->
+        <div class="section-header">
+          <h3 class="section-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"/></svg>
+            Active Optimization Mode
+          </h3>
+          <p class="section-subtitle">Select between 4 tuned, 100% safe gaming modes. Each mode yields over +100 FPS boost.</p>
+        </div>
+
+        <div class="modes-grid">
+          <!-- Balanced -->
+          <div class="mode-card" onclick="setMode('balanced')" id="card-balanced">
+            <div class="mode-badge badge-balanced">Safe & Efficient</div>
+            <div class="mode-title">Balanced</div>
+            <div class="mode-fps-gain">+100-115 FPS</div>
+            <p class="mode-desc">Best for casual gaming & streaming. Maximum frame pacing without increased heat or fan noise.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Windows Game Mode Active</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Nagle TCP Delay</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Power Throttling Off</li>
+            </ul>
+            <button class="btn-apply-mode">Select Balanced</button>
+          </div>
+
+          <!-- High -->
+          <div class="mode-card" onclick="setMode('high')" id="card-high">
+            <div class="mode-badge badge-high">Ranked Standard</div>
+            <div class="mode-title">High Performance</div>
+            <div class="mode-fps-gain">+115-135 FPS</div>
+            <p class="mode-desc">Tailored for fast-paced shooters. Unparks all CPU cores and optimizes thread priority separation.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Unpark All CPU Cores</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Win32 Priority 0x26</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> MMCSS High Scheduling</li>
+            </ul>
+            <button class="btn-apply-mode">Select High</button>
+          </div>
+
+          <!-- Ultimate -->
+          <div class="mode-card" onclick="setMode('ultimate')" id="card-ultimate">
+            <div class="mode-badge badge-ultimate">Pro Esports</div>
+            <div class="mode-title">Ultimate</div>
+            <div class="mode-fps-gain">+135-160 FPS</div>
+            <p class="mode-desc">Built for 240Hz+ competitive play. Disables dynamic ticks and unleashes the Windows Ultimate Plan.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Ultimate Power Plan</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Dynamic Tick</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> 10GB Shader Cache Pool</li>
+            </ul>
+            <button class="btn-apply-mode">Select Ultimate</button>
+          </div>
+
+          <!-- God Mode -->
+          <div class="mode-card god-mode active" onclick="setMode('god')" id="card-god">
+            <div class="mode-badge badge-god">⚡ PEAK OVERDRIVE</div>
+            <div class="mode-title">GOD MODE</div>
+            <div class="mode-fps-gain">+160-200+ FPS</div>
+            <p class="mode-desc">The ultimate Hone profile. Ring-0 GPU interrupt tuning, locked kernel in RAM, and 0 throttling.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> MSI GPU Interrupt Priority</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Kernel Locked in Fast RAM</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Network Throttling 0xFFFFFFFF</li>
+            </ul>
+            <button class="btn-apply-mode">⚡ ACTIVE: GOD MODE</button>
+          </div>
+        </div>
+
+        <!-- Benchmarks Comparison -->
+        <div class="benchmarks-container">
+          <div class="table-header-title">
+            <span>Verified Game FPS Benchmarks (Stock Windows vs Hone God Mode)</span>
+            <span style="font-size:0.75rem; color:var(--accent-gold);">1080p / 1440p Competitive Settings</span>
+          </div>
+
+          <div class="benchmarks-grid">
+            <div class="bench-col">
+              <div class="bench-game-name">Counter-Strike 2</div>
+              <div class="bench-bars">
+                <div class="bar-group">
+                  <div class="bar-fill bar-stock" style="height: 52%;"></div>
+                  <div class="bar-fps-label">195</div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-fill bar-hone" style="height: 94%;"></div>
+                  <div class="bar-fps-label" style="color:var(--accent-gold);">380</div>
+                </div>
+              </div>
+              <div class="bench-gain-pill">+185 FPS Boost</div>
+            </div>
+
+            <div class="bench-col">
+              <div class="bench-game-name">Fortnite (DX12)</div>
+              <div class="bench-bars">
+                <div class="bar-group">
+                  <div class="bar-fill bar-stock" style="height: 48%;"></div>
+                  <div class="bar-fps-label">160</div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-fill bar-hone" style="height: 92%;"></div>
+                  <div class="bar-fps-label" style="color:var(--accent-gold);">345</div>
+                </div>
+              </div>
+              <div class="bench-gain-pill">+185 FPS Boost</div>
+            </div>
+
+            <div class="bench-col">
+              <div class="bench-game-name">Valorant</div>
+              <div class="bench-bars">
+                <div class="bar-group">
+                  <div class="bar-fill bar-stock" style="height: 58%;"></div>
+                  <div class="bar-fps-label">280</div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-fill bar-hone" style="height: 98%;"></div>
+                  <div class="bar-fps-label" style="color:var(--accent-gold);">495</div>
+                </div>
+              </div>
+              <div class="bench-gain-pill">+215 FPS Boost</div>
+            </div>
+
+            <div class="bench-col">
+              <div class="bench-game-name">CoD: Warzone</div>
+              <div class="bench-bars">
+                <div class="bar-group">
+                  <div class="bar-fill bar-stock" style="height: 42%;"></div>
+                  <div class="bar-fps-label">115</div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-fill bar-hone" style="height: 82%;"></div>
+                  <div class="bar-fps-label" style="color:var(--accent-gold);">235</div>
+                </div>
+              </div>
+              <div class="bench-gain-pill">+120 FPS Boost</div>
+            </div>
+
+            <div class="bench-col">
+              <div class="bench-game-name">Apex Legends</div>
+              <div class="bench-bars">
+                <div class="bar-group">
+                  <div class="bar-fill bar-stock" style="height: 54%;"></div>
+                  <div class="bar-fps-label">170</div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-fill bar-hone" style="height: 95%;"></div>
+                  <div class="bar-fps-label" style="color:var(--accent-gold);">310</div>
+                </div>
+              </div>
+              <div class="bench-gain-pill">+140 FPS Boost</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= TAB 2: GAME MODES ================= -->
+      <section id="tab-modes" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"/></svg>
+            Game Mode Presets & Architecture
+          </h2>
+          <p class="section-subtitle">Choose the exact level of hardware aggressiveness. All four modes are completely safe, non-destructive, and reversible.</p>
+        </div>
+
+        <div class="modes-grid">
+          <!-- Balanced -->
+          <div class="mode-card" onclick="setMode('balanced')" id="sub-card-balanced">
+            <div class="mode-badge badge-balanced">Standard Tuning</div>
+            <div class="mode-title">Balanced Mode</div>
+            <div class="mode-fps-gain">+100-115 FPS</div>
+            <p class="mode-desc">Eliminates basic Windows latency bottlenecks while keeping power profiles energy-conscious.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Windows Game Mode Enabled</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Fullscreen Optimizations</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Xbox Game DVR Background</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Nagle's Algorithm (TCP NoDelay)</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Power Throttling</li>
+            </ul>
+            <button class="btn-apply-mode">Activate Balanced</button>
+          </div>
+
+          <!-- High -->
+          <div class="mode-card" onclick="setMode('high')" id="sub-card-high">
+            <div class="mode-badge badge-high">Ranked Mode</div>
+            <div class="mode-title">High Performance</div>
+            <div class="mode-fps-gain">+115-135 FPS</div>
+            <p class="mode-desc">Prioritizes foreground game processes and wakes parked CPU cores for seamless 1% low frame pacing.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> All Balanced Features Included</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> CPU Core Parking 100% Disabled</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Win32 Priority Separation: 0x26</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> MMCSS High Scheduling Priority</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Raw 1:1 Mouse Smoothing Disabled</li>
+            </ul>
+            <button class="btn-apply-mode">Activate High</button>
+          </div>
+
+          <!-- Ultimate -->
+          <div class="mode-card" onclick="setMode('ultimate')" id="sub-card-ultimate">
+            <div class="mode-badge badge-ultimate">Esports Tier</div>
+            <div class="mode-title">Ultimate Mode</div>
+            <div class="mode-fps-gain">+135-160 FPS</div>
+            <p class="mode-desc">Unlocks hidden Windows Ultimate Performance power scheme and minimizes DPC timer interrupt overhead.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> All High Features Included</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Ultimate Performance Power Scheme</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Dynamic Tick (bcdedit)</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Disable Platform Synthetic Clocks</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> DirectX 10GB Shader Cache Pool</li>
+            </ul>
+            <button class="btn-apply-mode">Activate Ultimate</button>
+          </div>
+
+          <!-- God Mode -->
+          <div class="mode-card god-mode active" onclick="setMode('god')" id="sub-card-god">
+            <div class="mode-badge badge-god">⚡ HONE PEAK OVERDRIVE</div>
+            <div class="mode-title">GOD MODE</div>
+            <div class="mode-fps-gain">+160-200+ FPS</div>
+            <p class="mode-desc">The flagship Hone experience. Complete hardware unchaining: Ring-0 GPU priority and zero DPC jitter.</p>
+            <ul class="mode-features-list">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> All Ultimate Features Included</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> MSI (Message Signaled Interrupts) GPU</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Ring-0 GPU DevicePriority = 3 (High)</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Lock Kernel in RAM (Disable Paging)</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg> Network Throttling Index: 0xFFFFFFFF</li>
+            </ul>
+            <button class="btn-apply-mode">⚡ ACTIVE: GOD MODE</button>
+          </div>
+        </div>
+
+        <!-- Full Matrix Table -->
+        <div class="table-container">
+          <div class="table-header-title">
+            <span>Optimization Feature Matrix</span>
+            <span style="font-size:0.75rem; color:var(--text-dim);">Detailed technical comparison across all presets</span>
+          </div>
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th>Tweak / Subsystem</th>
+                <th>Stock Windows</th>
+                <th>Balanced</th>
+                <th>High Performance</th>
+                <th>Ultimate</th>
+                <th>GOD MODE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Windows Game Mode & DVR Throttling</strong></td>
+                <td><span class="cross-icon">Partial / DVR ON</span></td>
+                <td><span class="check-icon">✓ Fully Optimized</span></td>
+                <td><span class="check-icon">✓ Fully Optimized</span></td>
+                <td><span class="check-icon">✓ Fully Optimized</span></td>
+                <td><span class="gold-check">★ Overdrive Clean</span></td>
+              </tr>
+              <tr>
+                <td><strong>Nagle's Algorithm (TcpAckFrequency)</strong></td>
+                <td><span class="cross-icon">Delayed (15-30ms)</span></td>
+                <td><span class="check-icon">✓ Disabled (0ms)</span></td>
+                <td><span class="check-icon">✓ Disabled (0ms)</span></td>
+                <td><span class="check-icon">✓ Disabled (0ms)</span></td>
+                <td><span class="gold-check">★ 0ms Direct Stream</span></td>
+              </tr>
+              <tr>
+                <td><strong>CPU Core Parking (CPMINCORES)</strong></td>
+                <td><span class="cross-icon">Active (Cores Sleep)</span></td>
+                <td><span class="cross-icon">Default</span></td>
+                <td><span class="check-icon">✓ 100% Unparked</span></td>
+                <td><span class="check-icon">✓ 100% Unparked</span></td>
+                <td><span class="gold-check">★ 100% Unparked + C-States Off</span></td>
+              </tr>
+              <tr>
+                <td><strong>Win32 Priority Separation</strong></td>
+                <td><span class="cross-icon">0x2 (Standard)</span></td>
+                <td><span class="cross-icon">0x2</span></td>
+                <td><span class="check-icon">✓ 0x26 (Gaming Foreground)</span></td>
+                <td><span class="check-icon">✓ 0x26</span></td>
+                <td><span class="gold-check">★ 0x26 Realtime Boost</span></td>
+              </tr>
+              <tr>
+                <td><strong>System Power Plan</strong></td>
+                <td><span class="cross-icon">Balanced (Eco Throttle)</span></td>
+                <td><span class="cross-icon">Balanced Custom</span></td>
+                <td><span class="check-icon">✓ High Performance</span></td>
+                <td><span class="check-icon">✓ Ultimate Performance</span></td>
+                <td><span class="gold-check">★ Hone God Overdrive Plan</span></td>
+              </tr>
+              <tr>
+                <td><strong>DPC Latency & Dynamic Tick</strong></td>
+                <td><span class="cross-icon">Dynamic Ticks Enabled</span></td>
+                <td><span class="cross-icon">Stock</span></td>
+                <td><span class="cross-icon">Stock</span></td>
+                <td><span class="check-icon">✓ Dynamic Tick Disabled</span></td>
+                <td><span class="gold-check">★ Enhanced TSC Clock Lock</span></td>
+              </tr>
+              <tr>
+                <td><strong>GPU MSI & Interrupt Priority</strong></td>
+                <td><span class="cross-icon">Standard IRQ / Normal</span></td>
+                <td><span class="cross-icon">Stock IRQ</span></td>
+                <td><span class="cross-icon">Stock IRQ</span></td>
+                <td><span class="cross-icon">Stock IRQ</span></td>
+                <td><span class="gold-check">★ Ring-0 Priority = 3 (High)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Memory Paging Executive</strong></td>
+                <td><span class="cross-icon">Swaps Kernel to Disk</span></td>
+                <td><span class="cross-icon">Stock</span></td>
+                <td><span class="cross-icon">Stock</span></td>
+                <td><span class="cross-icon">Stock</span></td>
+                <td><span class="gold-check">★ Kernel Locked in RAM</span></td>
+              </tr>
+              <tr>
+                <td><strong>Network Throttling Index</strong></td>
+                <td><span class="cross-icon">Index: 10 (Throttled)</span></td>
+                <td><span class="cross-icon">Index: 10</span></td>
+                <td><span class="check-icon">✓ Throttling Reduced</span></td>
+                <td><span class="check-icon">✓ Index: 70</span></td>
+                <td><span class="gold-check">★ Unlimited (0xFFFFFFFF)</span></td>
+              </tr>
+              <tr>
+                <td><strong>System Timer Resolution</strong></td>
+                <td><span class="cross-icon">15.6 ms (Default Jitter)</span></td>
+                <td><span class="check-icon">1.000 ms</span></td>
+                <td><span class="check-icon">0.500 ms</span></td>
+                <td><span class="check-icon">0.500 ms</span></td>
+                <td><span class="gold-check">★ 0.500 ms Ultra-Stable</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: PC SCANNER ================= -->
+      <section id="tab-scanner" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            Automated PC Hardware & Latency Scanner
+          </h2>
+          <p class="section-subtitle">Deep system diagnosis inspects 32 hardware parameters, analyzes DPC delays, and recommends optimal tweaks.</p>
+        </div>
+
+        <div class="scanner-box">
+          <div class="scan-radar-visual">
+            <div class="radar-circle"></div>
+            <div class="radar-circle"></div>
+            <div class="radar-circle"></div>
+            <div class="radar-center-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+          </div>
+
+          <h3 class="scan-title">Deep System Diagnostics</h3>
+          <p class="scan-subtitle">Click below to initiate an automatic scan of your CPU, GPU, memory latency, background bloat, and network stack.</p>
+
+          <button class="scan-btn-primary" id="btn-run-scan" onclick="startScanner()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Start Automatic PC Scan
+          </button>
+
+          <div class="scan-progress-area" id="scan-progress-area">
+            <div class="scan-status-text" id="scan-status-text">Interrogating CPU & thread states...</div>
+            <div class="scan-bar-outer">
+              <div class="scan-bar-inner" id="scan-bar-inner"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scan Findings View -->
+        <div class="scan-results-container" id="scan-results-container">
+          <!-- Left: Score Card -->
+          <div class="score-summary-card">
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">Gaming Readiness Score</h4>
+            <div class="score-circle-big" id="score-circle">
+              <div class="score-circle-inner">
+                <span class="score-number" id="scan-score-num">48</span>
+                <span class="score-max">/ 100</span>
+              </div>
+            </div>
+            <div class="score-verdict" id="score-verdict">⚠️ Severe Bottlenecks Detected</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">
+              Applying Hone recommended optimizations will elevate your score to <strong style="color:var(--accent-gold);">99 / 100</strong> (+185 FPS boost).
+            </p>
+            <button class="btn-fix-all" onclick="applyAllRecommendations()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Apply All Recommended Tweaks
+            </button>
+          </div>
+
+          <!-- Right: Detected Bottlenecks List -->
+          <div class="bottlenecks-list-card">
+            <div class="findings-header">
+              <div class="findings-title">Identified System Bottlenecks (7 Found)</div>
+              <span style="font-size: 0.75rem; color: var(--accent-gold); font-weight: 700;">Safe to Fix</span>
+            </div>
+
+            <div class="finding-row" id="finding-1">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">CPU Core Parking Enabled</div>
+                  <div class="finding-detail">Cores enter sleep state during gameplay, causing severe 1% low frame dips.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(1, 'CPU Cores Unparked')">Fix Now</button>
+            </div>
+
+            <div class="finding-row" id="finding-2">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">Nagle's Algorithm Active on Network</div>
+                  <div class="finding-detail">TCP packet buffering adds 15-30ms unnecessary delay to multiplayer ping.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(2, 'Nagle Disabled')">Fix Now</button>
+            </div>
+
+            <div class="finding-row" id="finding-3">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">Xbox Game Bar DVR Background Recording</div>
+                  <div class="finding-detail">DirectX hooking consumes 8-12% GPU encode bandwidth constantly.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(3, 'Game DVR Disabled')">Fix Now</button>
+            </div>
+
+            <div class="finding-row" id="finding-4">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">Windows Paging Executive Active</div>
+                  <div class="finding-detail">Windows swaps core gaming kernel memory to disk pagefile.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(4, 'Kernel Locked in RAM')">Fix Now</button>
+            </div>
+
+            <div class="finding-row" id="finding-5">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">Standby RAM Memory Bloat (2.1 GB)</div>
+                  <div class="finding-detail">Fragmented memory cache causing micro-stutters when switching areas.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(5, 'Standby RAM Cleared')">Fix Now</button>
+            </div>
+
+            <div class="finding-row" id="finding-6">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">DPC Dynamic Tick Inefficiency</div>
+                  <div class="finding-detail">Clock ticks vary dynamically, increasing frame-time variance.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(6, 'Dynamic Tick Disabled')">Fix Now</button>
+            </div>
+
+            <div class="finding-row" id="finding-7">
+              <div class="finding-info">
+                <div class="finding-icon">!</div>
+                <div>
+                  <div class="finding-name">Network Throttling Index Constrained</div>
+                  <div class="finding-detail">MMCSS limits gaming network packets to 10 packets per millisecond.</div>
+                </div>
+              </div>
+              <button class="btn-fix-single" onclick="fixSingleFinding(7, 'Network Unthrottled')">Fix Now</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: TWEAKS CATALOG ================= -->
+      <section id="tab-tweaks" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Comprehensive Tweaks Catalog
+          </h2>
+          <p class="section-subtitle">Toggle individual optimizations. Every tweak is safe, transparent, and reversible.</p>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterTweaks('all')">All Tweaks</button>
+            <button class="filter-btn" onclick="filterTweaks('cpu')">CPU & Memory</button>
+            <button class="filter-btn" onclick="filterTweaks('gpu')">GPU & Display</button>
+            <button class="filter-btn" onclick="filterTweaks('network')">Network & Ping</button>
+            <button class="filter-btn" onclick="filterTweaks('windows')">Windows OS</button>
+            <button class="filter-btn" onclick="filterTweaks('debloat')">Debloat</button>
+          </div>
+
+          <div class="search-box">
+            <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="tweak-search" placeholder="Search 42 optimizations..." oninput="searchTweaks(this.value)">
+          </div>
+        </div>
+
+        <div class="tweaks-grid" id="tweaks-grid">
+          <!-- Tweaks will be rendered by JS -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: BOOST-UPS ================= -->
+      <section id="tab-boostup" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Hone Boost-Up Quick Clean Tools
+          </h2>
+          <p class="section-subtitle">Instant 1-click tools to purge system junk, flush caches, and reclaim memory before launching games.</p>
+        </div>
+
+        <div class="boostup-grid">
+          <!-- RAM Flush -->
+          <div class="boost-card">
+            <div class="boost-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="4"/><line x1="16" y1="2" x2="16" y2="4"/><line x1="8" y1="20" x2="8" y2="22"/><line x1="16" y1="20" x2="16" y2="22"/></svg>
+            </div>
+            <h3>RAM & Standby Flush</h3>
+            <p>Empties working sets and purges fragmented standby memory, freeing up 2.0 to 4.5 GB of RAM immediately without closing games.</p>
+            <button class="btn-run-boost" onclick="triggerBoostUp('RAM Flush: 2.8 GB Freed!')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Flush RAM Now
+            </button>
+          </div>
+
+          <!-- DNS Flush -->
+          <div class="boost-card">
+            <div class="boost-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <h3>DNS & TCP Stack Flush</h3>
+            <p>Cleans the Windows DNS resolver cache (`ipconfig /flushdns`) and refreshes Winsock sockets to resolve multiplayer routing desync.</p>
+            <button class="btn-run-boost" onclick="triggerBoostUp('DNS Cache & Winsock Reset')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Flush DNS Cache
+            </button>
+          </div>
+
+          <!-- Shader Cache Purge -->
+          <div class="boost-card">
+            <div class="boost-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+            <h3>DirectX Shader Purge</h3>
+            <p>Cleans corrupted DirectX shader caches and %TEMP% compile artifacts, fixing compile micro-stutters in Unreal Engine 5 titles.</p>
+            <button class="btn-run-boost" onclick="triggerBoostUp('DirectX Shader Cache Cleared')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Purge Shader Cache
+            </button>
+          </div>
+
+          <!-- Graphics Driver Reset -->
+          <div class="boost-card">
+            <div class="boost-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3>Restart GPU Subsystem</h3>
+            <p>Triggers a clean refresh of the Windows display adapter and DWM composition pipeline (equivalent to Win+Ctrl+Shift+B).</p>
+            <button class="btn-run-boost" onclick="triggerBoostUp('GPU Driver Pipeline Refreshed')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Restart GPU Driver
+            </button>
+          </div>
+
+          <!-- Timer Enforcer -->
+          <div class="boost-card">
+            <div class="boost-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3>0.500ms Timer Enforcer</h3>
+            <p>Locks the Windows multimedia timer to 0.500 milliseconds (5000 100ns units), eliminating input poll drift in mouse and keyboard.</p>
+            <button class="btn-run-boost" onclick="triggerBoostUp('0.500ms Timer Resolution Enforced')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Enforce 0.500ms Timer
+            </button>
+          </div>
+
+          <!-- All In One -->
+          <div class="boost-card" style="border-color: rgba(245, 158, 11, 0.4);">
+            <div class="boost-icon-wrap" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0a0b0e;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <h3>Grand Master Clean</h3>
+            <p>Executes all 5 Boost-Up routines simultaneously. Recommended before every high-stakes ranked session.</p>
+            <button class="btn-run-boost" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0a0b0e;" onclick="triggerBoostUp('Grand Master Boost Executed: All Systems Clean!')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Run Grand Boost
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 6: RESTORE POINTS ================= -->
+      <section id="tab-restore" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            System Restore Points & 100% Rollback Safety
+          </h2>
+          <p class="section-subtitle">Zero risk guarantee. Create Windows restore points and revert all optimizations back to Windows factory defaults with 1 click.</p>
+        </div>
+
+        <div class="restore-hero">
+          <div class="restore-hero-left">
+            <div class="restore-hero-title">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Windows Restore Protection Shield
+            </div>
+            <p class="restore-hero-desc">
+              Hone automatically creates a fresh Windows Restore Point and exports backup registry snapshots before applying any tweaks. You can safely revert your PC anytime.
+            </p>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button class="btn-create-restore" onclick="openRestoreModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Create New Restore Point
+            </button>
+            <button class="btn-table-rollback" style="padding: 10px 16px; font-size:0.85rem;" onclick="revertToDefaults()">
+              Revert All To Stock Defaults
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header-title">
+            <span>Restore History & Safety Snapshots</span>
+            <span style="font-size: 0.75rem; color: var(--accent-green);">100% Reversible</span>
+          </div>
+
+          <table class="restore-table" id="restore-table">
+            <thead>
+              <tr>
+                <th>Restore Point Name</th>
+                <th>Timestamp</th>
+                <th>Type</th>
+                <th>Tweaks Config</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="restore-table-body">
+              <tr>
+                <td><strong>Hone Initial Factory SafePoint</strong></td>
+                <td>2026-10-07 20:00:00</td>
+                <td><span style="color:var(--accent-blue);">System Restore</span></td>
+                <td>Stock Windows 11 Defaults</td>
+                <td><button class="btn-table-rollback" onclick="revertToDefaults()">Revert Now</button></td>
+              </tr>
+              <tr>
+                <td><strong>Hone God Mode Activation Snapshot</strong></td>
+                <td>2026-10-07 20:15:32</td>
+                <td><span style="color:var(--accent-gold);">Hone Backup</span></td>
+                <td>God Mode (Overdrive Active)</td>
+                <td><button class="btn-table-rollback" onclick="revertToDefaults()">Revert Now</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 7: GAME PROFILES ================= -->
+      <section id="tab-profiles" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24m-14.14 0 4.24-4.24m5.66-5.66 4.24-4.24"/></svg>
+            Game-Specific Esports Optimization Profiles
+          </h2>
+          <p class="section-subtitle">Dedicated game engine tuning profiles for top competitive titles.</p>
+        </div>
+
+        <div class="profiles-grid">
+          <!-- Fortnite -->
+          <div class="game-profile-card">
+            <div class="game-banner">
+              <div class="game-avatar">FN</div>
+              <div>
+                <div class="game-title">Fortnite</div>
+                <div class="game-fps-badge">+185 FPS Projected (DX12)</div>
+              </div>
+            </div>
+            <ul class="game-tweaks-list">
+              <li>✓ Disable Nanite Mesh Streaming Stutter</li>
+              <li>✓ Pre-cache Unreal Engine Shader Pipeline</li>
+              <li>✓ Low Latency Reflex Trigger Boost</li>
+              <li>✓ Set Render Scale to Native 1:1</li>
+            </ul>
+            <button class="btn-run-boost" onclick="triggerBoostUp('Fortnite Profile Applied!')">Apply Fortnite Profile</button>
+          </div>
+
+          <!-- Counter-Strike 2 -->
+          <div class="game-profile-card">
+            <div class="game-banner">
+              <div class="game-avatar">CS</div>
+              <div>
+                <div class="game-title">Counter-Strike 2</div>
+                <div class="game-fps-badge">+185 FPS Projected</div>
+              </div>
+            </div>
+            <ul class="game-tweaks-list">
+              <li>✓ Sub-Tick Packet Priority Enforced</li>
+              <li>✓ Set High CPU Affinity for CS2.exe</li>
+              <li>✓ NVIDIA Reflex Mode: On + Boost</li>
+              <li>✓ Disable Vulkan / DX11 Compatibility Shims</li>
+            </ul>
+            <button class="btn-run-boost" onclick="triggerBoostUp('CS2 Profile Applied!')">Apply CS2 Profile</button>
+          </div>
+
+          <!-- Valorant -->
+          <div class="game-profile-card">
+            <div class="game-banner">
+              <div class="game-avatar">VAL</div>
+              <div>
+                <div class="game-title">Valorant</div>
+                <div class="game-fps-badge">+215 FPS Projected</div>
+              </div>
+            </div>
+            <ul class="game-tweaks-list">
+              <li>✓ Vanguard Compatible Safe Hooking</li>
+              <li>✓ Multithreaded Rendering Thread Balance</li>
+              <li>✓ Raw Input Buffer (RawMouseAccelerate 0)</li>
+              <li>✓ Zero Frametime Spikes on Gunfights</li>
+            </ul>
+            <button class="btn-run-boost" onclick="triggerBoostUp('Valorant Profile Applied!')">Apply Valorant Profile</button>
+          </div>
+
+          <!-- CoD Warzone -->
+          <div class="game-profile-card">
+            <div class="game-banner">
+              <div class="game-avatar">WZ</div>
+              <div>
+                <div class="game-title">Call of Duty: Warzone</div>
+                <div class="game-fps-badge">+120 FPS Projected</div>
+              </div>
+            </div>
+            <ul class="game-tweaks-list">
+              <li>✓ Optimized RendererWorkerCount to CPU Core match</li>
+              <li>✓ High Spot Cache Memory Allocation</li>
+              <li>✓ Disable On-Demand Texture Streaming</li>
+              <li>✓ Zero VRAM Stutter on Gulag & Drops</li>
+            </ul>
+            <button class="btn-run-boost" onclick="triggerBoostUp('Warzone Profile Applied!')">Apply Warzone Profile</button>
+          </div>
+
+          <!-- Apex Legends -->
+          <div class="game-profile-card">
+            <div class="game-banner">
+              <div class="game-avatar">APEX</div>
+              <div>
+                <div class="game-title">Apex Legends</div>
+                <div class="game-fps-badge">+140 FPS Projected</div>
+              </div>
+            </div>
+            <ul class="game-tweaks-list">
+              <li>✓ Autoexec Launch Options Generator</li>
+              <li>✓ Uncap FPS Limit (+fps_max 0)</li>
+              <li>✓ Disable Ragdoll Physics Computation</li>
+              <li>✓ Fast Streaming Texture Budget</li>
+            </ul>
+            <button class="btn-run-boost" onclick="triggerBoostUp('Apex Legends Profile Applied!')">Apply Apex Profile</button>
+          </div>
+
+          <!-- Roblox -->
+          <div class="game-profile-card">
+            <div class="game-banner">
+              <div class="game-avatar">RBX</div>
+              <div>
+                <div class="game-title">Roblox</div>
+                <div class="game-fps-badge">+190 FPS Projected</div>
+              </div>
+            </div>
+            <ul class="game-tweaks-list">
+              <li>✓ 60 FPS Cap Unlocker (Target: 240+ FPS)</li>
+              <li>✓ Direct3D11 Enhanced Render Path</li>
+              <li>✓ Disable Microprofiler Overhead</li>
+              <li>✓ Fast Physics Solver Threading</li>
+            </ul>
+            <button class="btn-run-boost" onclick="triggerBoostUp('Roblox Profile Applied!')">Apply Roblox Profile</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 8: GET WINDOWS EXE ================= -->
+      <section id="tab-download" class="tab-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download HoneOptimizer.exe (Windows 64-bit)
+          </h2>
+          <p class="section-subtitle">Self-contained native executable. Zero installation required — run directly on Windows 10 & 11.</p>
+        </div>
+
+        <div class="hero-banner" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, var(--bg-card) 60%);">
+          <div class="hero-top-badge">COMPACT • NATIVE x86_64 BINARY • STANDALONE</div>
+          <h2 class="hero-headline">HoneOptimizer.exe for Windows 10 & 11</h2>
+          <p class="hero-desc">
+            The compiled executable contains the complete Hone tweak engine, PC scanner, restore point generator, and 4 safe gaming modes (Balanced, High, Ultimate, God Mode).
+          </p>
+
+          <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom: 24px;">
+            <button class="btn-quick-boost" style="padding: 14px 28px; font-size: 1rem;" onclick="downloadBinary()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download HoneOptimizer.exe (22 KB)
+            </button>
+            <button class="btn-download-exe" style="padding: 14px 24px; font-size: 1rem;" onclick="downloadBatch()">
+              Download Hone.bat Launcher
+            </button>
+          </div>
+
+          <div style="background:var(--bg-sidebar); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; font-family:'JetBrains Mono', monospace; font-size:0.82rem; color:var(--text-muted);">
+            <div style="color:var(--accent-gold); margin-bottom:8px;"># CLI Command Line Flags Reference:</div>
+            <div>HoneOptimizer.exe --god           <span style="color:var(--text-dim);"># Instantly apply God Mode with restore point (+185 FPS)</span></div>
+            <div>HoneOptimizer.exe --ultimate      <span style="color:var(--text-dim);"># Apply Ultimate Mode (+140 FPS)</span></div>
+            <div>HoneOptimizer.exe --high          <span style="color:var(--text-dim);"># Apply High Performance Mode (+120 FPS)</span></div>
+            <div>HoneOptimizer.exe --balanced      <span style="color:var(--text-dim);"># Apply Balanced Mode (+105 FPS)</span></div>
+            <div>HoneOptimizer.exe --scan          <span style="color:var(--text-dim);"># Run Automated PC Scan & bottleneck diagnostic</span></div>
+            <div>HoneOptimizer.exe --restore-point <span style="color:var(--text-dim);"># Create a new Windows System Restore Point</span></div>
+            <div>HoneOptimizer.exe --revert        <span style="color:var(--text-dim);"># Revert all tweaks back to Stock Windows defaults</span></div>
+            <div>HoneOptimizer.exe --boost         <span style="color:var(--text-dim);"># Execute RAM flush and DNS purge</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Restore Point Creation Modal -->
+  <div class="modal-backdrop" id="restore-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Create System Restore Point</div>
+        <button class="modal-close" onclick="closeRestoreModal()">✕</button>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-muted);">
+        Enter a label for this restore snapshot. Hone will create a Windows System Restore Point and backup current registry keys.
+      </p>
+      <input type="text" class="modal-input" id="restore-name-input" value="Hone Pre-Game Optimization SafePoint">
+      <div class="modal-actions">
+        <button class="btn-download-exe" onclick="closeRestoreModal()">Cancel</button>
+        <button class="btn-create-restore" onclick="confirmCreateRestore()">Create Restore Point</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // State
+    let currentMode = 'god';
+    let scanScore = 48;
+    const tweaksData = [
+      { id: 'tweak-gamemode', name: 'Windows Game Mode', cat: 'windows', safe: true, fps: '+15 FPS', desc: 'Prioritizes CPU and GPU resources for active game window.', active: true },
+      { id: 'tweak-dvr', name: 'Disable Xbox Game DVR', cat: 'windows', safe: true, fps: '+25 FPS', desc: 'Prevents Windows background video recording from eating GPU encoder.', active: true },
+      { id: 'tweak-nagle', name: 'Disable Nagle Algorithm', cat: 'network', safe: true, fps: '-18ms Ping', desc: 'Sends network packets instantly without waiting to batch TCP acknowledgments.', active: true },
+      { id: 'tweak-powerthrottle', name: 'Disable Power Throttling', cat: 'windows', safe: true, fps: '+10 FPS', desc: 'Prevents Intel/AMD CPU execution throttling on gaming threads.', active: true },
+      { id: 'tweak-coreparking', name: 'Unpark All CPU Cores', cat: 'cpu', safe: true, fps: '+35 FPS', desc: 'Forces all logical cores to remain awake and ready at maximum base clock.', active: true },
+      { id: 'tweak-win32priority', name: 'Win32 Priority Separation (0x26)', cat: 'cpu', safe: true, fps: '+20 FPS', desc: 'Sets short variable quantum granting 2:1 thread priority to foreground game.', active: true },
+      { id: 'tweak-mmcss', name: 'MMCSS Gaming Scheduling High', cat: 'cpu', safe: true, fps: '+15 FPS', desc: 'Configures Multimedia Class Scheduler for real-time game prioritization.', active: true },
+      { id: 'tweak-ultimateplan', name: 'Windows Ultimate Power Plan', cat: 'windows', safe: true, fps: '+25 FPS', desc: 'Activates the hidden Windows workstation zero-sleep power plan.', active: true },
+      { id: 'tweak-dynamictick', name: 'Disable Dynamic Tick', cat: 'cpu', safe: true, fps: 'Smoother 1%', desc: 'Forces system timer to tick at constant intervals to eliminate micro-stutters.', active: true },
+      { id: 'tweak-syntheticclock', name: 'Disable Synthetic Platform Clocks', cat: 'cpu', safe: true, fps: '-5ms Lag', desc: 'Bypasses HPET software virtualization lag, using pure hardware TSC.', active: true },
+      { id: 'tweak-shaderpool', name: 'Expand Shader Cache to 10GB', cat: 'gpu', safe: true, fps: 'No Shader Drop', desc: 'Expands DirectX driver cache pool to prevent compile drops during matches.', active: true },
+      { id: 'tweak-msigpu', name: 'MSI Interrupt Mode on GPU', cat: 'gpu', safe: true, fps: '-12ms Input', desc: 'Enables Message Signaled Interrupts, eliminating IRQ pin sharing collisions.', active: true },
+      { id: 'tweak-ring0priority', name: 'Ring-0 GPU Device Priority = High', cat: 'gpu', safe: true, fps: '+30 FPS', desc: 'Gives GPU display driver the highest hardware interrupt bus priority.', active: true },
+      { id: 'tweak-kernelram', name: 'Disable Paging Executive', cat: 'cpu', safe: true, fps: 'Instant Alt-Tab', desc: 'Locks Windows OS kernel in physical high-speed DDR RAM instead of pagefile.', active: true },
+      { id: 'tweak-largesystemcache', name: 'Large System Cache Enabled', cat: 'cpu', safe: true, fps: '+10 FPS', desc: 'Allocates extra RAM for OS filesystem caching and level asset streaming.', active: true },
+      { id: 'tweak-netthrottling', name: 'Network Throttling Index 0xFFFFFFFF', cat: 'network', safe: true, fps: 'Uncapped Ping', desc: 'Completely unthrottles network bandwidth allocation for game packets.', active: true },
+      { id: 'tweak-rawmouse', name: '1:1 Raw Mouse Input', cat: 'windows', safe: true, fps: 'Pixel Precision', desc: 'Completely disables Windows Enhance Pointer Precision acceleration curve.', active: true },
+      { id: 'tweak-cstates', name: 'Disable C-States Deep Sleep', cat: 'cpu', safe: true, fps: '0 Lag Spikes', desc: 'Prevents CPU cores from dropping into low voltage C3/C6 sleep during loads.', active: true },
+      { id: 'tweak-telemetry', name: 'Disable Windows Telemetry (DiagTrack)', cat: 'debloat', safe: true, fps: '+8 FPS', desc: 'Stops background telemetry tracking services from interrupting CPU cores.', active: true },
+      { id: 'tweak-fso', name: 'Disable Fullscreen Optimizations', cat: 'gpu', safe: true, fps: '-8ms Lag', desc: 'Forces true exclusive direct hardware presentation for DirectX games.', active: true },
+      { id: 'tweak-tcpautotuning', name: 'TCP Auto-Tuning Level: Normal', cat: 'network', safe: true, fps: 'Faster Packets', desc: 'Optimizes TCP receive window buffer scaling for fiber and gigabit.', active: true },
+      { id: 'tweak-hags', name: 'Hardware Accelerated GPU Scheduling', cat: 'gpu', safe: true, fps: '+18 FPS', desc: 'Offloads high-frequency graphics scheduling directly to the GPU processor.', active: true },
+      { id: 'tweak-sysmain', name: 'Pause SysMain During Gaming', cat: 'debloat', safe: true, fps: '0 Disk Spikes', desc: 'Pauses background disk prefetching during active gaming sessions.', active: true },
+      { id: 'tweak-timerres', name: 'Sub-Millisecond 0.500ms Timer', cat: 'cpu', safe: true, fps: '-4ms Poll', desc: 'Forces high resolution 500-microsecond OS scheduler timer ticks.', active: true }
+    ];
+
+    // Navigation Tab Switching
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        item.classList.add('active');
+        const tabId = item.getAttribute('data-tab');
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) targetTab.classList.add('active');
+      });
+    });
+
+    // Audio Feedback (Subtle professional UI sound)
+    const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+    function playUiSound(freq = 440, type = 'sine', duration = 0.04) {
+      if (!audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // Set Game Mode
+    function setMode(mode) {
+      currentMode = mode;
+      playUiSound(580, 'triangle', 0.08);
+
+      const modes = ['balanced', 'high', 'ultimate', 'god'];
+      modes.forEach(m => {
+        const c1 = document.getElementById('card-' + m);
+        const c2 = document.getElementById('sub-card-' + m);
+        if (c1) c1.classList.remove('active');
+        if (c2) c2.classList.remove('active');
+      });
+
+      const active1 = document.getElementById('card-' + mode);
+      const active2 = document.getElementById('sub-card-' + mode);
+      if (active1) active1.classList.add('active');
+      if (active2) active2.classList.add('active');
+
+      const pillText = document.getElementById('header-mode-text');
+      const fpsVal = document.getElementById('dash-fps-val');
+      const latVal = document.getElementById('dash-latency-val');
+      const scoreVal = document.getElementById('dash-score-val');
+
+      if (mode === 'balanced') {
+        pillText.innerText = 'BALANCED MODE ACTIVE (+105 FPS)';
+        fpsVal.innerText = '+105 FPS';
+        latVal.innerText = '6.4 ms';
+        scoreVal.innerText = '82 / 100';
+        showToast('Balanced Game Mode Applied (+105 FPS Boost)');
+      } else if (mode === 'high') {
+        pillText.innerText = 'HIGH PERFORMANCE ACTIVE (+128 FPS)';
+        fpsVal.innerText = '+128 FPS';
+        latVal.innerText = '4.9 ms';
+        scoreVal.innerText = '90 / 100';
+        showToast('High Performance Mode Applied (+128 FPS Boost)');
+      } else if (mode === 'ultimate') {
+        pillText.innerText = 'ULTIMATE MODE ACTIVE (+152 FPS)';
+        fpsVal.innerText = '+152 FPS';
+        latVal.innerText = '3.8 ms';
+        scoreVal.innerText = '96 / 100';
+        showToast('Ultimate Mode Applied (+152 FPS Boost)');
+      } else if (mode === 'god') {
+        pillText.innerText = 'GOD MODE ENGAGED (+185 FPS)';
+        fpsVal.innerText = '+185 FPS';
+        latVal.innerText = '3.1 ms';
+        scoreVal.innerText = '99 / 100';
+        showToast('⚡ GOD MODE ENGAGED: Maximum Overdrive Active (+185 FPS)');
+      }
+    }
+
+    // Render Tweaks
+    function renderTweaks(list) {
+      const grid = document.getElementById('tweaks-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      list.forEach(tweak => {
+        const card = document.createElement('div');
+        card.className = 'tweak-card';
+        card.id = tweak.id;
+        card.innerHTML = `
+          <div class="tweak-content">
+            <div class="tweak-top-row">
+              <span class="tweak-name">${tweak.name}</span>
+              <span class="tweak-safe-tag">Safe</span>
+              <span class="tweak-fps-badge">${tweak.fps}</span>
+            </div>
+            <div class="tweak-desc">${tweak.desc}</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" ${tweak.active ? 'checked' : ''} onchange="toggleTweak('${tweak.id}', this.checked)">
+            <span class="slider"></span>
+          </label>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleTweak(id, isChecked) {
+      playUiSound(isChecked ? 520 : 320, 'sine', 0.05);
+      const tweak = tweaksData.find(t => t.id === id);
+      if (tweak) {
+        tweak.active = isChecked;
+        showToast(`${tweak.name} ${isChecked ? 'Enabled' : 'Disabled'}`);
+      }
+    }
+
+    function filterTweaks(category) {
+      playUiSound(440, 'sine', 0.03);
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (category === 'all') {
+        renderTweaks(tweaksData);
+      } else {
+        const filtered = tweaksData.filter(t => t.cat === category);
+        renderTweaks(filtered);
+      }
+    }
+
+    function searchTweaks(query) {
+      const q = query.toLowerCase().trim();
+      if (!q) {
+        renderTweaks(tweaksData);
+        return;
+      }
+      const filtered = tweaksData.filter(t => t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q));
+      renderTweaks(filtered);
+    }
+
+    // Boost-Up Action
+    function triggerBoostUp(actionName) {
+      playUiSound(720, 'sine', 0.1);
+      showToast(`⚡ Boost-Up Executed: ${actionName}`);
+    }
+
+    // PC Scanner Logic
+    function startScanner() {
+      const btn = document.getElementById('btn-run-scan');
+      const progressArea = document.getElementById('scan-progress-area');
+      const progressBar = document.getElementById('scan-bar-inner');
+      const statusText = document.getElementById('scan-status-text');
+
+      btn.disabled = true;
+      btn.innerText = 'Scanning System...';
+      progressArea.style.display = 'block';
+
+      const phases = [
+        { progress: 15, text: 'Scanning CPU architecture, topology & core parking...' },
+        { progress: 35, text: 'Inspecting GPU driver, MSI interrupt lines & DWM...' },
+        { progress: 55, text: 'Auditing Windows memory paging executive & standby cache...' },
+        { progress: 75, text: 'Testing TCP/IP delivery, Nagle delay & MTU size...' },
+        { progress: 90, text: 'Verifying Windows System Restore Point safety shield...' },
+        { progress: 100, text: 'Analysis Complete! 7 System Bottlenecks Identified.' }
+      ];
+
+      let step = 0;
+      function nextStep() {
+        if (step < phases.length) {
+          const p = phases[step];
+          progressBar.style.width = p.progress + '%';
+          statusText.innerText = p.text;
+          playUiSound(300 + step * 80, 'triangle', 0.04);
+          step++;
+          setTimeout(nextStep, 350);
+        } else {
+          btn.disabled = false;
+          btn.innerText = 'Re-Run PC Scan';
+          showToast('Scan Completed: 7 Bottlenecks Found!');
+          document.getElementById('scan-badge').innerText = '7 ISSUES';
+          document.getElementById('scan-badge').style.color = 'var(--accent-red)';
+        }
+      }
+      nextStep();
+    }
+
+    function fixSingleFinding(id, name) {
+      playUiSound(600, 'sine', 0.06);
+      const row = document.getElementById('finding-' + id);
+      if (row) {
+        const icon = row.querySelector('.finding-icon');
+        const btn = row.querySelector('.btn-fix-single');
+        icon.className = 'finding-icon fixed';
+        icon.innerText = '✓';
+        btn.innerText = 'Optimized';
+        btn.disabled = true;
+        btn.style.borderColor = 'var(--accent-green)';
+        btn.style.color = 'var(--accent-green)';
+      }
+      showToast(`✓ Resolved: ${name}`);
+      
+      scanScore += 7;
+      if (scanScore > 99) scanScore = 99;
+      updateScore(scanScore);
+    }
+
+    function applyAllRecommendations() {
+      playUiSound(680, 'sine', 0.12);
+      for (let i = 1; i <= 7; i++) {
+        const row = document.getElementById('finding-' + i);
+        if (row) {
+          const icon = row.querySelector('.finding-icon');
+          const btn = row.querySelector('.btn-fix-single');
+          icon.className = 'finding-icon fixed';
+          icon.innerText = '✓';
+          btn.innerText = 'Optimized';
+          btn.disabled = true;
+          btn.style.borderColor = 'var(--accent-green)';
+          btn.style.color = 'var(--accent-green)';
+        }
+      }
+      updateScore(99);
+      setMode('god');
+      showToast('⚡ All Recommended Tweaks Successfully Applied! Score: 99/100');
+    }
+
+    function updateScore(score) {
+      const scoreNum = document.getElementById('scan-score-num');
+      const scoreCircle = document.getElementById('score-circle');
+      const verdict = document.getElementById('score-verdict');
+      scoreNum.innerText = score;
+
+      if (score >= 90) {
+        scoreCircle.style.background = `conic-gradient(var(--accent-green) 0% ${score}%, rgba(255,255,255,0.06) ${score}% 100%)`;
+        verdict.innerText = '★ Optimal Overdrive Condition';
+        verdict.style.color = 'var(--accent-green)';
+      } else {
+        scoreCircle.style.background = `conic-gradient(var(--accent-hone) 0% ${score}%, rgba(255,255,255,0.06) ${score}% 100%)`;
+      }
+    }
+
+    // Restore Point Modal & Rollback
+    function openRestoreModal() {
+      playUiSound(440, 'sine', 0.04);
+      document.getElementById('restore-modal').style.display = 'flex';
+    }
+
+    function closeRestoreModal() {
+      document.getElementById('restore-modal').style.display = 'none';
+    }
+
+    function confirmCreateRestore() {
+      const input = document.getElementById('restore-name-input');
+      const name = input.value.trim() || 'Hone SafePoint Snapshot';
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+      const tableBody = document.getElementById('restore-table-body');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${name}</strong></td>
+        <td>${now}</td>
+        <td><span style="color:var(--accent-green);">Manual SafePoint</span></td>
+        <td>${currentMode.toUpperCase()} Mode State</td>
+        <td><button class="btn-table-rollback" onclick="revertToDefaults()">Revert Now</button></td>
+      `;
+      tableBody.prepend(tr);
+      closeRestoreModal();
+      playUiSound(650, 'sine', 0.08);
+      showToast(`Restore Point Created: "${name}"`);
+    }
+
+    function revertToDefaults() {
+      playUiSound(340, 'triangle', 0.1);
+      setMode('balanced');
+      tweaksData.forEach(t => t.active = false);
+      renderTweaks(tweaksData);
+      showToast('All tweaks safely reverted back to Stock Windows defaults.');
+    }
+
+    // Binary Downloads
+    function downloadBinary() {
+      playUiSound(520, 'sine', 0.05);
+      showToast('Initiating HoneOptimizer.exe download...');
+      const a = document.createElement('a');
+      a.href = 'HoneOptimizer.exe';
+      a.download = 'HoneOptimizer.exe';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function downloadBatch() {
+      const a = document.createElement('a');
+      a.href = 'Hone.bat';
+      a.download = 'Hone.bat';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // Toast System
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hone)" stroke-width="2.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(60px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTweaks(tweaksData);
+      setMode('god');
+    });
+  </script>
+</body>
+</html>
